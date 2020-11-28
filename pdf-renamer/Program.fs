@@ -1,5 +1,4 @@
 ﻿open System.IO
-open System.Drawing
 
 let currentDirectory = Directory.GetCurrentDirectory()
 
@@ -17,19 +16,16 @@ let RenameFile (path:string, newName:string) =
         System.Console.ForegroundColor <- System.ConsoleColor.DarkYellow
         System.Console.WriteLine(Path.GetFileNameWithoutExtension(newPath))
 
-let removeZlib (name:string) =
-    name.Replace("(z-lib.org)","")
-
-let removeUnderscore (name:string) =
-    name.Replace("_"," ")
-
-let TrimString (name:string) =
-    name.Trim()
-
-let RemoveThisProgramFromList (files:string[]) = 
-    Array.filter (fun a -> a <> "pdf-renamer.exe") files
-
 let GetNewName (path:string) =
+    let removeZlib (name:string) =
+        name.Replace("(z-lib.org)","")
+
+    let removeUnderscore (name:string) =
+        name.Replace("_"," ")
+
+    let TrimString (name:string) =
+        name.Trim()
+
     Path.GetFileNameWithoutExtension(path)
     |> removeUnderscore
     |> removeZlib
@@ -37,7 +33,6 @@ let GetNewName (path:string) =
 
 let renameFiles (path:string) =
     Directory.GetFiles path 
-    |> RemoveThisProgramFromList
     |> Array.map (fun a -> (a, GetNewName(a)))
     |> Array.iter RenameFile
 
