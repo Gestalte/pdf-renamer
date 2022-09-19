@@ -7,8 +7,10 @@ let currentDirectory = Directory.GetCurrentDirectory()
 let RenameFile (path:string, newName:string) =
     let dir () =
         Path.GetDirectoryName(path)
+
     let extension () =
         Path.GetExtension(path)
+
     let newPath = $"{dir()}\{newName}{extension()}"
 
     System.Diagnostics.Debug.WriteLine(path)
@@ -17,7 +19,7 @@ let RenameFile (path:string, newName:string) =
     if (path = newPath) then
         ()
     else
-        Directory.Move(path, newPath)
+        File.Move(path, newPath)
         System.Console.ForegroundColor <- System.ConsoleColor.DarkYellow
         System.Console.WriteLine(Path.GetFileNameWithoutExtension(newPath))
 
@@ -41,15 +43,16 @@ let GetNewName (path:string) =
 
     Path.GetFileNameWithoutExtension(path)
     |> PrintState
+    |> removeZlib
     |> System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase
     |> PrintState
-    |> removeZlib
     |> removeUnderscore
     |> removeDash
     |> TrimString
     
 let renameFiles (path:string) =
     Directory.GetFiles path 
+    |> Array.filter (fun f -> Path.GetFileName(f) <> "pdf-renamer.exe")
     |> Array.map (fun a -> (a, GetNewName(a)))
     |> Array.iter RenameFile
 
