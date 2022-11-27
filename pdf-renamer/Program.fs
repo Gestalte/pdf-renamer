@@ -30,7 +30,7 @@ let GetNewName (path:string) =
         name.Replace("(z-lib.org)","").Replace("(Z Lib.Org)","")
 
     let removeAnna (name:string) =
-        Regex.Replace(name, "--annas-archive--libgenrs-nf-\d{6}", "")
+        Regex.Replace(name, "--annas-archive--libgenrs-nf-\d+$", "")
 
     let removeLibgen (name:string) =
         name.Replace("libgen.li","")
@@ -51,6 +51,7 @@ let GetNewName (path:string) =
     Path.GetFileNameWithoutExtension(path)
     |> PrintState
     |> removeZlib
+    |> removeLibgen
     |> removeAnna
     |> System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase
     |> PrintState
