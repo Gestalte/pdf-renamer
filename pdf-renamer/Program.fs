@@ -1,6 +1,7 @@
 ﻿open System.IO
 open System
 open System.Globalization
+open System.Text.RegularExpressions
 
 let currentDirectory = Directory.GetCurrentDirectory()
 
@@ -28,6 +29,12 @@ let GetNewName (path:string) =
     let removeZlib (name:string) =
         name.Replace("(z-lib.org)","").Replace("(Z Lib.Org)","")
 
+    let removeAnna (name:string) =
+        Regex.Replace(name, "--annas-archive--libgenrs-nf-\d{6}", "")
+
+    let removeLibgen (name:string) =
+        name.Replace("libgen.li","")
+
     let removeUnderscore (name:string) =
         name.Replace("_"," ")
 
@@ -44,6 +51,7 @@ let GetNewName (path:string) =
     Path.GetFileNameWithoutExtension(path)
     |> PrintState
     |> removeZlib
+    |> removeAnna
     |> System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase
     |> PrintState
     |> removeUnderscore
