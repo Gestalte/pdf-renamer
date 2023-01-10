@@ -48,20 +48,41 @@ let GetNewName (path:string) =
         System.Diagnostics.Debug.WriteLine(name)
         name
 
+    let ToTitleCase (name:string) =
+        name.ToLower()
+        |> System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase
+
+    let ToOrdinalWords (name:string):string  =
+        let ordinalSuffixes = [|"nd";"st";"th"|]
+        let mutable newName = name
+
+        for ordinalSuffix in ordinalSuffixes do
+            newName<-Regex.Replace(newName, @"(\d+)" + ordinalSuffix, "$1" + ordinalSuffix, RegexOptions.IgnoreCase)
+
+        newName
+
     Path.GetFileNameWithoutExtension(path)
     |> PrintState
     |> removeZlib
     |> removeLibgen
     |> removeAnna
-    |> System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase
-    |> PrintState
+    |> ToTitleCase
+    |> ToOrdinalWords
     |> removeUnderscore
     |> removeDash
     |> TrimString
+    |> PrintState
     
 let renameFiles (path:string) =
     Directory.GetFiles path 
-    |> Array.filter (fun f -> Path.GetFileName(f) <> "pdf-renamer.exe")
+    |> Array.filter (fun f -> Path.GetFileName(f) <> Path.GetFileName(Directory.GetCurrentDirectory()))// "pdf-renamer.exe")
+
+    #if DEBUG
+
+    |> Array.filter (fun f -> Path.GetExtension(f) = ".pdf")
+
+    #endif
+
     |> Array.map (fun a -> (a, GetNewName(a)))
     |> Array.iter RenameFile
 
